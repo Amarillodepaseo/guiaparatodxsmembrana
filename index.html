@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membrana 12</title>
+    <style>
+        body {
+            background: #dcf7e4;
+            color: #380eb6;
+            font-family: 'Glacial Indifference', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding-right: 240px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 205px;
+            height: 100vh;
+            overflow: auto;
+            background: #c9f5d6;
+            padding: 8px;
+            border-left: 2px solid #380eb6;
+        }
+        /* Grupo horizontal para los botones de tamaño */
+        .size-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 6px 0 10px 0;
+        }
+        .size-buttons button {
+            flex: 1;
+            min-width: 40px;
+        }
+        .details {
+            display: none;
+            padding: 10px;
+            color: #ffffff;
+            background: #380eb6;
+            border: 1px solid #380eb6;
+            margin-top: 5px;
+        }
+        .content-card {
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .index a {
+            display: block;
+            margin: 4px 0;
+            color: #380eb6;
+        }
+        .font-large {
+            font-size: 120%;
+        }
+        .font-xl {
+            font-size: 140%;
+        }
+
+        /* --- Modo contraste (Blanco y negro) --- */
+        .bw {
+            background: #000000 !important;
+            color: #ffffff !important;
+        }
+        .bw * {
+            color: #ffffff !important;
+            background-color: transparent !important;
+        }
+        .bw a {
+            color: #88ccff !important;
+        }
+        .bw .panel {
+            background: #1a1a1a !important;
+            border-left-color: #ffffff !important;
+        }
+        .bw .content-card {
+            background: rgba(0, 0, 0, 0.85) !important;
+        }
+        .bw .details {
+            border-color: #ffffff !important;
+        }
+        .bw .index a {
+            color: #88ccff !important;
+        }
+        .bw button {
+            background: #333333 !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+        }
+        .bw button:hover {
+            background: #555555 !important;
+        }
+
+        /* --- Modo contraste (Azul y amarillo) --- */
+        .by {
+            background: #001f5b !important;
+            color: #ffeb3b !important;
+        }
+        .by * {
+            color: #ffeb3b !important;
+            background-color: transparent !important;
+        }
+        .by a {
+            color: #ffd700 !important;
+        }
+        .by .panel {
+            background: #002a7a !important;
+            border-left-color: #ffeb3b !important;
+        }
+        .by .content-card {
+            background: #002a7a !important;
+        }
+        .by .details {
+            border-color: #ffeb3b !important;
+            background: #001f5b !important;
+        }
+        .by .index a {
+            color: #ffd700 !important;
+        }
+        .by button {
+            background: #003399 !important;
+            color: #ffeb3b !important;
+            border: 2px solid #ffeb3b !important;
+        }
+        .by button:hover {
+            background: #0044cc !important;
+        }
+        .by .header button {
+            background: #003399 !important;
+            color: #ffeb3b !important;
+            border: 2px solid #ffeb3b !important;
+        }
+        .by h1,
+        .by h2,
+        .by h3 {
+            color: #ffeb3b !important;
+        }
+
+        /* --- Botones por defecto (fuera del panel) --- */
+        button {
+            margin: 4px;
+            margin-top: 35px;
+            padding: 8px 14px;
+            cursor: pointer;
+            background: #ffffff;
+            color: #380eb6;
+            border: 2px solid #380eb6;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+        button:hover {
+            background: #380eb6;
+            color: #ffffff;
+        }
+
+        /* --- ESTILOS INDIVIDUALES PARA CADA BOTÓN DEL PANEL --- */
+        .btn-size-normal { background: #ffffff !important; color: #380eb6 !important; border-color: #380eb6 !important; }
+        .btn-size-normal:hover { background: #380eb6 !important; color: white !important; }
+        .btn-size-large { background: #ffffff !important; color: #380eb6 !important; border-color: #380eb6 !important; }
+        .btn-size-large:hover { background: #380eb6 !important; color: #ffffff !important; }
+        .btn-size-xl { background: #ffffff !important; color: #380eb6 !important; border-color: #380eb6 !important; }
+        .btn-size-xl:hover { background: #380eb6 !important; color: #ffffff !important; }
+
+        .btn-contrast-bw { background: #000000 !important; color: white !important; border-color: #455A64 !important; }
+        .btn-contrast-bw:hover { background: #353c3f !important; }
+        .btn-contrast-by { background: #3F51B5 !important; color: #FFEB3B !important; border-color: #303F9F !important; }
+        .btn-contrast-by:hover { background: #303F9F !important; }
+
+        .btn-tts-play { background: #009688 !important; color: white !important; border-color: #00796B !important; }
+        .btn-tts-play:hover { background: #00796B !important; }
+        .btn-tts-pause { background: #FF9800 !important; color: white !important; border-color: #F57C00 !important; }
+        .btn-tts-pause:hover { background: #F57C00 !important; }
+        .btn-tts-stop { background: #9E9E9E !important; color: white !important; border-color: #757575 !important; }
+        .btn-tts-stop:hover { background: #757575 !important; }
+
+        .btn-easy-read { background: #001aff !important; color: white !important; border-color: #281fa2 !important; }
+        .btn-easy-read:hover { background: #070166 !important; }
+        .btn-reset { background: #f505e9 !important; color: white !important; border-color: #b40329 !important; }
+        .btn-reset:hover { background: #aa0378 !important; }
+
+        .panel button { width: 100%; text-align: center; margin: 4px 0; font-weight: 600; }
+        .size-buttons button { width: auto; padding: 8px 0; font-weight: bold; }
+
+        /* --- Lectura fácil (big-text) --- */
+        .big-text { font-size: 150%; }
+        .big-text h1 { font-size: 2.2rem; }
+        .big-text h2 { font-size: 1.8rem; }
+        .big-text p, .big-text li { font-size: 1.3rem; }
+        .big-text .index a { font-size: 1.2rem; }
+
+        /************* OTROS AJUSTES DE ESTILO ******************************************************************************/
+        .size-buttons button:nth-child(1) { font-size: 14px; }
+        .size-buttons button:nth-child(2) { font-size: 18px; }
+        .size-buttons button:nth-child(3) { font-size: 24px; }
+        
+        h1 { font-size: 4rem; }
+        #titulo { margin-bottom: 6px; }
+        #subtitulo { margin-top: 2px; }
+
+        /* CLASES DE CONTROL DE FONDO */
+        .bg-image {
+            background-image: url('https://drive.google.com/thumbnail?id=1jtm4StVHPaMhh2TcSHYy6C_Gt4OOG8hi&sz=w2000');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        
+        /* Modificado: Color sólido sin !important para que los modos de contraste puedan ganarle */
+        .bg-solid-easy {
+            background-image: none;
+            background-color: #c9f5d6;
+        }
+
+        table, th, td {
+            border: 1px solid #380eb6;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+
+        .index-image {
+            flex: 0 0 400px;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .index-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- ESTILOS DE SECCIONES CON IMÁGENES A LA DERECHA EN LECTURA FÁCIL --- */
+        .easy-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .easy-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        .easy-media {
+            flex: 0 0 300px;
+            max-width: 300px;
+            margin-right: 40px; /* Aquí se empuja la imagen hacia la izquierda */
+        }
+        .easy-media img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-image">
+
+    <!-- Panel lateral fijo -->
+    <div class="panel">
+        <h3 style="text-align: center;">Panel de Accesibilidad</h3>
+        
+
+        <p><strong>Lectura fácil</strong></p>
+        <button class="btn-easy-read" onclick="toggleEasy()">📖 Lectura fácil</button>
+        
+        <p><strong>Tamaño de letra</strong></p>
+        <div class="size-buttons">
+            <button class="btn-size-normal" onclick="setSize('normal')">A</button>
+            <button class="btn-size-large" onclick="setSize('large')">A</button>
+            <button class="btn-size-xl" onclick="setSize('xl')">A</button>
+        </div>
+
+        <p><strong>Opciones de contraste</strong></p>
+        <button class="btn-contrast-bw" onclick="setContrast('bw')">Blanco y negro</button>
+        <button class="btn-contrast-by" onclick="setContrast('by')">Azul y amarillo</button>
+
+        <p><strong>Texto a audio (TTS)</strong></p>
+        <button class="btn-tts-play" onclick="playTTS()">▶ Reproducir</button>
+        <button class="btn-tts-pause" onclick="pauseTTS()">|| Pausar</button>
+        <button class="btn-tts-stop" onclick="stopTTS()">⏹ Detener</button>
+
+        
+
+        <p><strong>Reestablecer guía</strong></p>
+        <button class="btn-reset" onclick="resetGuide()">↻ Reestablecer</button>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container" id="pageContent">
+        <div class="header">
+            <div class="header-left">
+                <h1 id="titulo">MEMBRANA 12</h1>
+            </div>
+            <div class="header-right">
+                <button onclick="toggleInfo()">Sobre esta guía</button>
+                <button onclick="toggleContact()">Contacto</button>
+            </div>
+        </div>
+
+        <h2 id="subtitulo">Orientaciones para participantes sobre la convocatoria.</h2>
+
+        <div id="guideInfo" class="details">
+            Esta página reúne la información principal de la convocatoria Membrana 12.
+            Permite consultar requisitos, fechas y orientaciones.
+            Incluye herramientas de accesibilidad.
+            Facilita la navegación y la lectura del contenido.
+        </div>
+
+        <div id="contactInfo" class="details">
+            Si tienes dudas sobre esta guía escribe a: publicaciones.crea@idartes.gov.co
+        </div>
+
+        <!-- Contenedor dinámico -->
+        <div id="dynamicContentContainer">
+            <p id="resumenConvocatoria"><strong>Resumen de la convocatoria:</strong> La convocatoria Membrana 12 invita a participantes de los procesos de formación artística Crea a compartir relatos, experiences, imágenes, sonidos y otras creaciones relacionadas con sus vivencias. Esta guía presenta de manera organizada la información principal sobre participación, requisitos, criterios de selección, cronograma y acompañamiento, incorporando además herramientas de accesibilidad para facilitar la consulta de los contenidos.</p>
+
+            <div class="index-container">
+                <div class="index-image">
+                    <img src="Poster M12.png" alt="Ilustración del índice" />
+                </div>
+                <div class="index">
+                    <p><em>Ilustración de una figura humanoide de color violeta ubicada en el centro de la imagen. 
+                    De su cabeza surgen múltiples rostros humanos de diferentes edades, géneros y apariencias, 
+                    conectados entre sí mediante formas similares a raíces o ramas. El fondo presenta formas 
+                    onduladas en tonos rosados, verdes y blancos que generan una sensación de movimiento y transformación.</em></p>
+                    <h3>Índice</h3>
+                    <a href="#presentacion">Presentación</a>
+                    <a href="#quemembrana">¿Qué es Membrana?</a>
+                    <a href="#convocatoria">¿De qué trata esta convocatoria?</a>
+                    <a href="#tematica">Temática y Preguntas orientadoras</a>
+                    <a href="#participar">¿Quiénes pueden participar?</a>
+                    <a href="#envio">¿Cómo participar?</a>
+                    <a href="#criterios">Criterios de recepción y selección</a>
+                    <a href="#cronograma">Cronograma clave</a>
+                    <a href="#Paso a paso">Paso a paso</a>
+                    <a href="#referentes">Referentes</a>
+                    <a href="#glosario">Glosario</a>
+                </div>
+            </div>
+
+            <div class="content-card" id="content">
+                <div id="mainTextDiv">
+                    <h2 id="presentacion">Presentación</h2>
+                    <p>Queridas y queridos participantes de la Gerencia Crea, cordial saludo.</p>
+                    
+                    <p>Este documento es una guía con orientaciones para conocer detalles 
+                        sobre cómo participar en la convocatoria del número 12 de la revista Membrana. 
+                        En esta ocasión, el número estará dedicado a recoger tus relatos, experiencias, historias y anécdotas 
+                        como participante activa/o de los procesos de formación artística de Crea 2026.</p> 
+
+                    <p>Esta guía es una fuente de consulta y resolución de dudas sobre la convocatoria. De esta manera, sin 
+                        importar tu edad, línea de atención o área artística en la que participas, 
+                        aquí encontraras toda la información necesaria para enviar tu propuesta.</p>
+
+                    <p>En primer lugar, el documento les contará qué es la revista Membrana, presenta la temática escogida para este número. 
+                        Luego, se profundiza sobre quiénes pueden participar y cómo hacerlo, así como 
+                        los formatos y lenguajes que deben tener las propuestas. Además de enunciar algunos criterios de participación y selección. </p>
+
+                    <p>Finalmente, compartimos algunos referentes para enriquecer las provocaciones 
+                        de la creación e inspiración, en torno a la temática de la que trata esta convocatoria. </p>
+
+                    <p><strong>¡Nos entusiasma mucho invitarles a tomarse la Membrana en este número!
+                        Muchas gracias.
+                        Equipo de Investigación y Gestión del Conocimiento (EPIG)</strong></p>
+                    
+                    <h2 id="quemembrana">¿Qué es Membrana?</h2>
+                    <p>Membrana es una revista virtual liderada por el equipo de Investigación y Gestión del conocimiento de la 
+                        Gerencia Crea de Idartes, consolidada desde el año 2020. </p>
+
+                    <p>Su objetivo es visibilizar las reflexiones emergentes de las prácticas artísticas, pedagógicas y 
+                        territoriales de Crea. Funciona como una plataforma de gestión del conocimiento donde las experiencias y aprendizajes se 
+                        difunden de manera accesible y continua. Puedes encontrarla en la web de <a href="https://www.crea.gov.co/publicaciones-crea/" target="_blank">Publicaciones Crea.</a></p>
+
+                    <h2 id="convocatoria">¿De qué trata esta convocatoria?</h2>
+                    <p>Esta convocatoria es una invitación abierta que presents propuestas de contenido 
+                        que puedan hacer parte del número 12 de la revista Membrana.</p>
+                    <p>Es una invitación a pensarte y sentirte como <strong>“bicho humano y no humano”</strong>, ser atravesado por relaciones, 
+                        afectos, rarezas, vínculos y procesos de creación. 
+                        A través de la imaginación y la ficción, buscamos relatos que expandan la experiencia más allá de lo 
+                        literal, abriendo espacio a lo extraño, lo sensible y lo posible.</p>
+                    <p>El universo de esta edición surge de las preguntas sobre las <strong>formas de habitar el presente</strong> y las reflexiones
+                         que la escritora Donna Haraway nos propone en su libro Seguir con el problema, 
+                         sobre las interconexiones entre todos los seres que habitan el planeta y el llamado a 
+                         vivir desde la presencia sensible mediante formas de florecimiento multiespecie. </p>
+                    <p>Te invitamos a mezclar lo vivido con lo imaginado, lo real con lo imposible, y a explorar formas creativas 
+                        de contar historias, con el fin emplear otras maneras de expresar y crear.</p>
+
+                    <h2 id="tematica">Temática y Preguntas orientadoras</h2>
+                    <p>Nos interesa conocer tu <strong>experiencia en Crea.</strong> Cuando decimos experiencia Crea nos referimos a la incidencia/importancia 
+                        que han tenido en tu vida el hecho de hacer parte de los talleres Crea. Esa incidencia puede ser política, 
+                        ética, social, cultural, socioafectiva, entre otras dimensiones. Es decir, esta edición de la revista acoge 
+                        las narraciones de las experiencias de vida alrededor de la creación, el relacionamiento entre participantes, 
+                        los sentires, el bienestar físico y emocional, la relación con el entorno físico, familiar y natural, las relaciones 
+                        interespecie, el habitar el presente y el ser de múltiples maneras. </p>
+                    <p>Te invitamos a contar tu experiencia en Crea desde el ejercicio de la <strong>fabulación especulativa*</strong>, es decir, te invitamos a viajar 
+                        a las profundidades de tu paso por Crea y no te quedes en el nivel del relato anecdótico, 
+                        sino que te enredes en tu propia historia y atraviesa otras capas que te permitan 
+                        narrarte desde escenarios imaginados y ficcionales. Queremos construir un paisaje macrobiótico con todo 
+                        tipo de bichos, humanos y no humanos. Conocer las vidas presentes, las rarezas, los sentires extraños, los vínculos, 
+                        los tejidos, las metamorfosis y todo tipo de propuestas que narren las vidas que habitan Crea. </p>
+                    <p><strong>Para abordar esta temática pueden inspirarse en preguntas como:</strong></p>
+                    <p>• Imagina que no eres un ser humano, sino otra especie o un bicho: ¿cómo serías? ¿Cómo te sentirías? ¿Cómo te verías? </p>
+                    <p>• ¿Sabes cuántos bichos hay en tu piel? ¿Cómo los imaginas?</p>
+                    <p>• Ya eres un ser diferente, ¿cómo crees que verías el mundo que habitas?</p>
+                    <p>• ¿Dónde encuentras las ideas o la inspiración al momento de crear? </p>
+                    <p>• ¿Cómo se relaciona tu proceso creativo con otros cuerpos, espacios o especies? </p>
+                    <p>• Si no solo tú eres un bicho, sino todas las demás personas, ¿cómo apoyarías a las/os otras/os o cómo las/los otras/os podrían ayudarte?</p>
+                    <p>• ¿Cómo crees que son los intercambios o las redes que construirían? ¿Con qué propósitos lo harían?</p>
+                    <p>• Luego de imaginar todo este universo de seres humanos y no humanos, ¿qué historias le contarías a otras/os sobre lo que vives en ese lugar llamado Crea? 
+                        (Si Crea fuera ese universo en el que habitan los seres humanos y no humanos que has imaginado, ¿cómo se lo mostrarías a aquellas personas que no 
+                        logran verlo todavía?, ¿qué historias le contarías a otras/os sobre lo que vives en Crea?)</p>
+                    <p><em>* La fabulación especulativa es un enfoque narrativo y teórico polifacético, definido principalmente por 
+                        Donna Haraway como un "modo de atención, una teoría de la historia y una práctica de construcción del mundo" 
+                        (Seguir con el problema: Generar parentesco en el Chthuluceno, 2019). Más allá de ser un simple género 
+                        literario, es una herramienta crítica y creativa que utiliza la ficción para explorar escenarios imaginados, 
+                        realidades alternativas y futuros posibles, a menudo fusionando lo real con lo imaginario.</em></p>
+
+                    <h2 id="participar">¿Quiénes pueden participar?</h2>
+                    <p>Pueden participar todas las personas vinculadas activamente a los procesos de formación del año 2026 de la Gerencia Crea, es decir:</p>
+                    <p>• De todas las áreas artísticas.</p>
+                    <p>• De todas las líneas de formación.</p>
+                    <p>• De todas las edades.</p>
+                    <p>• De todas las poblaciones.</p>
+                    <p>• De forma individual o colectiva.</p>
+                    
+                    <h2 id="envio">¿Cómo participar?</h2>
+                    <p><strong>Formatos</strong><br>
+                    Puedes presentar tu propuesta en distintos formatos, según el lenguaje o expresión artística. Por ejemplo:<br>
+                    • Textos (relatos, crónicas, poesía, diarios, cartas, etc.)<br>
+                    • Ilustraciones, pinturas, cómics o narrativas gráficas, etc.<br>
+                    • Fotografía o ensayos visuales<br>
+                    • Piezas audiovisuales o sonoras<br>
+                    • Propuestas híbridas o experimentales</p>
+
+                    <p><strong>¿Cómo enviar tu propuesta?</strong><br>
+                    Tu propuesta será entregada a través de tu AF, quien enviará un correo con todas las propuestas del grupo. Cada propuesta debe ir en un archivo independiente.</p>
+
+                    <p><strong>Fecha de cierre de la convocatoria:</strong> 31 de julio 2026<br>
+                    <strong>Correo de envío de las propuestas:</strong> <a href="mailto:publicaciones.crea@idartes.gov.co">publicaciones.crea@idartes.gov.co</a></p>
+
+                    <p>El correo debe incluir la siguiente información por cada propuesta:<br>
+                    • Título de la propuesta<br>
+                    • Tu nombre completo (también puedes usar seudónimos)<br>
+                    • Centro Crea<br>
+                    • Nombre de colegio o colectivo (si aplica)<br>
+                    • Línea de atención a la que pertenece<br>
+                    • Edad</p>
+
+                    <p>El <strong>asunto</strong> debe tener la siguiente estructura:<br>
+                    <em>Propuesta Membrana 12 - AF: Tito Pérez</em></p>
+
+                    <p><strong>Especificaciones técnicas</strong></p>
+                    <p><strong>Textos*</strong><br>
+                    • Formato editable Word (.doc o .docx).<br>
+                    • Tamaño carta.<br>
+                    • Extensión máxima: 4000 caracteres aproximadamente (800 palabras o 2 páginas).<br>
+                    • Fuente Arial, tamaño 12.<br>
+                    • Interlineado 1.5.<br>
+                    • Márgenes por defecto.<br>
+                    <em>*Se recomienda el uso de subtítulos o apartados.</em></p>
+
+                    <p><strong>Ilustraciones*</strong><br>
+                    • Formatos: .jpg o .png.<br>
+                    • Resolución mínima: 200 dpi - 1700 × 2200 px.<br>
+                    • Tamaño mínimo: 21,59 × 27,94 cm.<br>
+                    • Orientación Horizontal: 1920 × 1080 px.<br>
+                    • Orientación Vertical: 1242 × 2208 px.<br>
+                    • Tamaño máximo recomendado: 20 MB.<br>
+                    <em>*Se recomienda evitar imágenes pixeladas o borrosas y uso de escáner o cámara fotográfica para el registro.</em></p>
+
+                    <p><strong>Fotografías*</strong><br>
+                    • Formatos: .jpg, .jpeg o .png.<br>
+                    • Resolución mínima: 200 dpi - 1700 × 2200 px.<br>
+                    • Orientación Horizontal: 1920 × 1080 px.<br>
+                    • Orientación Vertical: 1242 × 2208 px.<br>
+                    • Tamaño máximo recomendado: 20 MB.<br>
+                    <em>*Se recomienda que la fotografía tenga una exposición equilibrada, es decir, ni demasiado oscura 
+                        ni demasiado clara. Sin embargo, esta sugerencia no aplica si la iluminación forma parte de 
+                        la intención creativa o expresiva de la imagen.</em></p>
+
+                    <p><strong>Videos*</strong><br>
+                    • Formatos: .mp4, .mov, .avi, .h264.<br>
+                    • Resoluciones mínimas: horizontal: 1280 × 720 px (HD) y vertical: 1242 × 2208 px.<br>
+                    • Enlaces públicos y funcionales.<br>
+                    <em>*Plataformas sugeridas: Vimeo, YouTube, Archive.org, Wikimedia.</em><br>
+                    <em>*Se recomienda que el audio sea comprensible y tenga niveles adecuados de volumen.</em></p>
+
+                    <p><strong>Audios*</strong><br>
+                    • Formatos: .wav, .mp3, .mp4 o .flac.<br>
+                    • Frecuencia mínima recomendada: 44.1 kHz.<br>
+                    • Profundidad mínima recomendada: 16 bits.<br>
+                    • Enlaces públicos y funcionales.<br>
+                    <em>*Plataformas sugeridas: SoundCloud, YouTube, Archive.org, Wikimedia.</em></p>
+
+                    <p><strong>Nota para las especificaciones técnicas mínimas:</strong><br>
+                    En caso de que existan imágenes, videos o audios que sean considerados indispensables para la propuesta y no cumplan con estas especificaciones técnicas mínimas, se revisará, dentro de las características del caso, acciones para que dichos recursos puedan ser utilizados.</p>
+
+                    <p><em>*Si durante tu proceso creativo elaboras un boceto de bichos, criaturas o personajes inspirados 
+                        en la temática, también puedes compartirlo junto con tu propuesta.</em></p>
+
+                    <h2 id="criterios">Criterios de recepción y selección</h2>
+                    <p>A continuación, te compartimos los criterios de elegibilidad y de valoración para 
+                        que tu propuesta sea tenida en cuenta, debes cumplir con lo siguiente: </p>
+                    <p><strong>1.</strong> Debes ser una persona vinculada activamente a procesos de formación de la Gerencia Crea durante el año 2026. </p>
+                    <p><strong>2.</strong> Tu propuesta se debe ajustar a la temática de la convocatoria: experiencias Crea narradas desde la fabulación especulativa y 
+                        las relaciones entre "bichos humanos y no humanos" (siguiendo los lineamientos presentados en la guía de la convocatoria). </p>
+                    <p><strong>3.</strong> La enviaste dentro de los plazos establecidos por la convocatoria.</p>
+                    <p><strong>4.</strong> La propuesta ha sido trabajada con el acompañamiento o conocimiento del/de la artista formador/a.</p>
+                    <p><strong>5.</strong> Debes diligenciar del <strong>formato de licencia y autorización de uso de obra, imagen y tratamiento de datos personales</strong>. En el caso 
+                        de participantes menores de edad, grupos que incluyan menores, o personas que requieran acudiente, deberán adjuntar adicionalmente el <strong>consentimiento informado</strong> firmado por madre, 
+                        padre o acudiente, que autorice tanto la participación como publicación del contenido. Si tiene dudas sobre este punto sobre qué documentos aplican a su caso 
+                        en particular, por favor contáctenos antes de enviar su propuesta. </p>
+                    <p><a href="https://drive.google.com/drive/folders/1K5LwznkqMt_5c4t3KYv7RXguMlij6rXC?usp=drive_link"> Enlace a los formatos.</a></p>
+                    <p><strong>6.</strong> Tu propuesta es inédita (no ha sido publicada previamente y es de autoría de quien la presenta).</p>
+                    <p>Las propuestas que no sean seleccionadas para el número editorial se integrarán más adelante a la 
+                        plataforma <a href="https://www.crea.gov.co/dialogos-desde-la-ventana/"> Diálogos desde la Ventana</a>, siempre y cuando cumplan con los requisitos de la convocatoria.</p>
+
+                    <h2 id="cronograma">Cronograma clave</h2>
+                    <p>A continuación, presentamos las fechas clave de esta convocatoria:</p>
+        
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Apertura de la convocatoria</td>
+                                <td><strong>1 de junio de 2026</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Cierre de la recepción de propuestas</td>
+                                <td><strong>31 de julio de 2026*</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Notificación a participantes de la aprobación de propuestas</td>
+                                <td><strong>14 de agosto de 2026 </strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>*Para el caso de participantes del convenio SED, la fecha de cierre será el <strong>18 de junio de 2026.</strong></p>
+
+                    <h2 id="Paso a paso">Paso a paso</h2>
+                    <p>A continuación podrás encontrar el paso a paso del proceso de postulación: </p>             
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Acción</th>
+                                <th>Comentario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Recibir la información de la convocatoria</strong></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Explorar la  revista <a href="https://www.crea.gov.co/publicaciones-crea/" target="_blank">Membrana</a></strong></td>
+                                <td>Con el fin de conocer mejor la publicación</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>Darle tiempo a la reflexión...</strong></td>
+                                <td>El/la AF acompaña el proceso de creación de las propuestas de sus participantes</td>
+                            </tr>
+                            <tr>
+                                <td>3.1</td>
+                                <td><strong>Se pueden presentar:</strong></td>
+                                <td>Propuestas individuales y/o Propuestas colectivas (De manera opcional, quien participa puede crear un boceto adicional a la propuesta central para hacer parte de la visualidad del número.)</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><strong>Entregar la propuesta  al AF para que la envía al correo correspondiente</strong></td>
+                                <td>En un solo correo con archivos separados por cada propuesta. <em>Ver las instrucciones de envío en la página 9 de esta guía.</em></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><strong>El Comité de Membrana revisa las propuestas</strong></td>
+                                <td>En caso de subsanaciones, el Comité se comunicará con el/la AF. <em>Ver Criterios de selección en la página 12 de esta guía.</em> El Comité estará conformado por el EPIG, AFs no participantes de la convocatoria y otros roles de acuerdo a la cantidad de propuestas recibidas.</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td><strong>Recibir notificación</strong></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>¿Cómo te puede acompañar a tu artista formador/a?</strong></p>
+                    <p>Si quieres participar el o la AF te acompañará en este proceso a partir de los siguientes pasos:</p>
+                    <p>
+                        <strong>Difusión</strong><br>
+                        • El centro Crea o tu AF te comparte la convocatoria.<br><br>
+                        
+                        <strong>Exploración de Membrana</strong><br>
+                        Te invitamos a conocer la revista Mebrana en la página de publicaciones:<br>
+                        • Lectura guiada<br>
+                        • Revisión de artículos<br>
+                        • Conversación sobre contenidos anteriores<br><br>
+                        
+                        <strong>Activación en el espacio de taller</strong><br>
+                        Integra la convocatoria en una sesión de formación:<br>
+                        • Conversa sobre la experiencia en Crea<br>
+                        • Explora las preguntas orientadoras<br>
+                        • Propón ejercicios creativos desde la fabulación<br><br>
+                        
+                        <strong>Acompañamiento a la creación</strong><br>
+                        Tu AF te acompañará en la construcción de sus propuestas:<br>
+                        • Individuales o colectivas<br>
+                        • Desde cualquiera de los lenguajes artísticos sugeridos<br>
+                        • Potenciando la imaginación y la experimentación
+                    </p>
+
+                    <h2 id="referentes">Referentes</h2>
+                    <p>
+                        En este apartado compartimos algunos referentes artísticos (en diferentes formatos) que se relacionan de diferentes maneras con el tema de la convocatoria. Estos (y todos los que las y los AF conozcan) pueden enriquecer los diálogos con los grupos de participantes y detonar ideas para crear, imaginar, narrar y fabular las experiencias en Crea. *Les sugerimos abrir los enlaces con clic derecho y seleccionar abrir enlace en una pestaña nueva.<br><br>
+
+                        <strong>Desde la escritura:</strong><br>
+                        - <a href="https://www.hospitalaustral.edu.ar/wp-content/uploads/2017/01/buitrago-jairo-eloisa-y-los-bichos.pdf">Eloísa y los bichos (libro-álbum)</a> de Jairo Buitrago y Rafael Yockteng (editado por Babel, 2009).<br>
+                        - <a href="https://bibliomedlosnogales.wordpress.com/wp-content/uploads/2019/03/novela-grafica-emigrantes.pdf">Emigrantes (libro-álbum)</a> de Shaun Tan (editado por FCE, 2007).<br>
+                        - <a href="https://www.bibliotecadigitaldebogota.gov.co/search/?search_text=La+metamorfosis">La metamorfosis (novela corta)</a> de Franz Kafka (diferentes ediciones).<br>
+                        - <a href="https://www.bibliotecadigitaldebogota.gov.co/resources/3646335/">La llamada de Cthulhu (libro de cuentos)</a> de H. P. Lovecraft (diferentes ediciones).<br>
+                        - <a href="https://linierscomics.com/macanudo/">Macanudo (cómics)</a> de Liniers (editado por Planeta, diferentes ediciones).<br>
+                        - Virus tropical (novela gráfica) de Power Paola (editado por La Silueta, 2009).<br>
+                        - Devociones (poemas) de Mary Oliver (editado por Lumen, 2025).<br>
+                        - <a href="https://drive.google.com/file/d/1q3Xt-dFvthLv3EBciMaZetrtz2iQvtk6/view">Seguir con el problema (ensayo)</a> de Donna Haraway (editado por Consonni, 2019).<br><br>
+
+                        <strong>Desde lo audiovisual:</strong><br>
+                        - <a href="https://es.wikipedia.org/wiki/La_mosca_(pel%C3%ADcula_de_1986)">La mosca (1986)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/Hoppers">Hoopers (2026)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/La_princesa_Mononoke">La princesa Mononoke (1997)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/The_Lobster">La langosta (2015)</a><br>
+                        - <a href="https://www.imdb.com/es/title/tt0099487/">El joven manos de tijera (1991)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/Avatar_(pel%C3%ADcula)">Avatar (2009)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/El_laberinto_del_fauno">El laberinto del fauno (2006)</a><br>
+                        - <a href="https://es.wikipedia.org/wiki/El_hombre_elefante_(pel%C3%ADcula)">El hombre elefante (1980)</a><br><br>
+
+                        <strong>Desde lo sonoro:</strong><br>
+                        - <a href="https://www.youtube.com/watch?v=jm5_xpqq1EU&list=RDjm5_xpqq1EU&start_radio=1">La sinfonía de los bichos raros</a> de Puerto Candelaria (2022).<br>
+                        - <a href="https://es.wikipedia.org/wiki/Homogenic">Homogenic</a> de Björk (1997).<br>
+                        - <a href="https://youtu.be/KSEpSpIrt98?si=rkqESnAeX8_SF_E4">El pabellón de los sueños</a> de Harold Budd producido por Brian Eno (1978).<br>
+                        - <a href="https://www.youtube.com/watch?v=LMmuzmhsVfM">Koyaanisqatsi soundtrack</a> - Phillip Glass (1983).<br><br>
+
+                        <strong>Desde lo visual:</strong><br>
+                        - Obra de <a href="https://historia-arte.com/obras/la-creacion-de-las-aves">Remedios Varo</a>, por ejemplo: Creación de pájaros (1957).<br>
+                        - Obra de <a href="https://es.wikipedia.org/wiki/Louise_Bourgeois">Louise Bourgeois</a>.<br>
+                        - Obra de <a href="https://vimeo.com/558513583?fl=pl&fe=sh">Paula Bruna Pérez</a>.<br>
+                        - Obra de <a href="https://nmwa.org/art/artists/patricia-piccinini/">Patricia Piccinini</a>.<br><br>
+
+                        <strong>Desde lo corporal:</strong><br>
+                        - <a href="https://www.youtube.com/watch?v=fdugWY0Cu_0">Ejercicios de animalización.</a><br>
+                        - <a href="https://www.youtube.com/watch?v=FrPFQsML3sM&t=218s">Ejercicios corporales</a> de Jacques Lecoq.<br>
+                        - Obra de Pina Bausch, por ejemplo: <a href="https://www.youtube.com/watch?v=HBubHrUGuHc">Nelken.</a><br>
+                        - Obra de Anna Halprin, por ejemplo: <a href="https://www.youtube.com/watch?v=Ky5GesRySfI">Circle the Earth</a> (2016).<br>
+                        - Obra de Xavier Le Roy, por ejemplo: <a href="https://www.youtube.com/watch?v=G3rv1TeVEPM">Self Unfinished (1998).</a><br>
+                        - Milena Sidorova, por ejemplo: <a href="https://www.youtube.com/watch?v=JItkRLVlf-c">The Spider.</a><br>
+                        - Butoh (Hijikata / Ohno).
+                    </p>
+
+                    <h2 id="glosario">Glosario</h2>
+                    <ul>
+                        <li><strong>Experiencia Crea:</strong> es todo lo que has vivido, sentido, aprendido, imaginado o transformado gracias a tu participación en Crea.</li>
+                        <li><strong>Fabulación especulativa:</strong> es una manera de contar historias mezclando lo que has vivido con la imaginación. No se trata solamente de recordar lo que pasó, sino de inventar nuevas formas de narrarlo, imaginando otros mundos, seres o posibilidades.</li>
+                        <li><strong>Bichos humanos y no humanos:</strong> es una manera imaginativa de pensar que compartimos el mundo con otros seres: animales, plantas, hongos, microorganismos o, también, seres imaginados. Todos podemos relacionarnos y aprender unos de otros.</li>
+                        <li><strong>Habitar el presente:</strong> es cuando prestamos atención a lo que vivimos aquí y ahora: las personas con quienes compartimos, los lugares que habitamos, las emociones que sentimos y las relaciones que construimos.</li>
+                    </ul>
+
+                    <footer>
+                        <div class="contenedor-creditos">
+                            <p><em> Guía desarrollada con amor por el Equipo de Investigación y Gestión del conocimiento (EPIG)</em></p>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let utterance;
+        let easyReadActive = false;
+        let isBigText = false;
+        let originalHTML = '';
+        let currentContrast = ''; // Rastrea si hay un modo de contraste activo ('bw' o 'by')
+        const bodyEl = document.body;
+        const dynamicContainer = document.getElementById('dynamicContentContainer');
+
+        function toggleInfo() {
+            let e = document.getElementById('guideInfo');
+            e.style.display = e.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleContact() {
+            let e = document.getElementById('contactInfo');
+            e.style.display = e.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function setSize(s) {
+            document.body.classList.remove('font-large', 'font-xl');
+            if (s === 'large') document.body.classList.add('font-large');
+            if (s === 'xl') document.body.classList.add('font-xl');
+        }
+
+        function setContrast(c) {
+            document.body.classList.remove('bw', 'by');
+            currentContrast = c; // Guardamos el contraste elegido
+            
+            if (c) {
+                document.body.classList.add(c);
+                // Si hay contraste activo, quitamos la clase de fondo de lectura fácil para que no interfiera
+                document.body.classList.remove('bg-solid-easy', 'bg-image');
+            } else {
+                // Si se quita el contraste, devolvemos el fondo que corresponda
+                if (easyReadActive) {
+                    document.body.classList.add('bg-solid-easy');
+                } else {
+                    document.body.classList.add('bg-image');
+                }
+            }
+        }
+
+        function playTTS() {
+            if (speechSynthesis.paused) {
+                speechSynthesis.resume();
+            } else {
+                speechSynthesis.cancel();
+                utterance = new SpeechSynthesisUtterance(document.getElementById('pageContent').innerText);
+                utterance.lang = 'es-ES';
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function pauseTTS() {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                speechSynthesis.pause();
+            }
+        }
+
+        function stopTTS() {
+            speechSynthesis.cancel();
+        }
+
+        function toggleEasy() {
+            if (easyReadActive) {
+                restoreOriginalText();
+            } else {
+                applyEasyRead();
+            }
+        }
+
+        function storeOriginalHTML() {
+            if (!originalHTML) {
+                originalHTML = dynamicContainer.innerHTML;
+            }
+        }
+
+        function restoreOriginalText() {
+            if (originalHTML) {
+                dynamicContainer.innerHTML = originalHTML;
+                easyReadActive = false;
+                
+                // Si no hay un modo de contraste activo, devolvemos la imagen de fondo original
+                document.body.classList.remove('bg-solid-easy');
+                if (!currentContrast) {
+                    document.body.className = "bg-image";
+                }
+            }
+        }
+
+        function applyEasyRead() {
+            storeOriginalHTML();
+            easyReadActive = true;
+
+            // Si NO hay un contraste activo, aplicamos el fondo sólido #c9f5d6
+            if (!currentContrast) {
+                document.body.className = "bg-solid-easy";
+            } else {
+                document.body.classList.remove('bg-image');
+            }
+
+            const easyVersion = `
+    <!-- ÍNDICE DINÁMICO PARA LA VERSIÓN DE LECTURA FÁCIL -->
+    <div class="index-container" style="margin-bottom: 30px; background: rgba(255,255,255,0.4); padding: 15px; border-radius: 8px;">
+        <h3>Índice de Lectura Fácil</h3>
+        <div class="index">
+            <a href="#lf-guia">1. ¿Qué es esta guía?</a>
+            <a href="#lf-que">2. ¿Qué es Membrana?</a>
+            <a href="#lf-quienes">3. ¿Quiénes pueden participar?</a>
+            <a href="#lf-dequetrata">4. ¿De qué trata esta convocatoria?</a>
+            <a href="#lf-presentar">5. ¿Qué puedes presentar?</a>
+            <a href="#lf-enviar">6. ¿Cómo puedes enviar tu propuesta?</a>
+            <a href="#lf-fechas">7. Fechas importantes</a>
+            <a href="#lf-ayuda">8. ¿Necesitas ayuda?</a>
+            <a href="#lf-glosario">Glosario</a>
+        </div>
+    </div>
+
+    <!-- SECCIONES DE LECTURA FÁCIL CON TEXTO E IMAGEN A LA DERECHA -->
+    <div class="easy-section" id="lf-guia">
+        <div class="easy-text">
+            <h2>1. ¿Qué es esta guía?</h2>
+            <p>Esta guía explica cómo puedes participar en la Membrana 12.</p>
+            <p>Aquí podrás encontrar:</p>
+            <p>- ¿Qué es Membrana?</p>
+            <p>- ¿Quiénes pueden participar?</p>
+            <p>- ¿Qué puedes crear para participar?</p>
+            <p>- ¿Cómo puedes enviar tu propuesta?</p>
+            <p>- Fechas importantes.</p>
+        </div>
+        <div class="easy-media">
+            <img src="paso_1.jpg" alt="Ilustración guía descriptiva" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-que">
+        <div class="easy-text">
+            <h2>2. ¿Qué es Membrana?</h2>
+            <p>Membrana es una revista digital de Crea.</p>
+            <p>En esta revista se publican historias, imágenes, reflexiones y creaciones realizadas por participantes en los procesos de formación artística de Crea.</p>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+2" alt="Ilustración revista digital" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-quienes">
+        <div class="easy-text">
+            <h2>3. ¿Quiénes pueden participar?</h2>
+            <p>En esta convocatoria, pueden participar:</p>
+            <ul>
+                <li>Niñas y niños.</li>
+                <li>Jóvenes.</li>
+                <li>Personas adultas.</li>
+                <li>Personas mayores.</li>
+                <li>Grupos o colectivos.</li>
+                <li>Participantes de cualquier área artística de Crea.</li>
+            </ul>
+            <p>Debes estar participando en un proceso de formación Crea durante el año 2026.</p>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+3" alt="Ilustración de participantes" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-dequetrata">
+        <div class="easy-text">
+            <h2>4. ¿De qué trata esta convocatoria?</h2>
+            <p>Queremos conocer tu experiencia en Crea.</p>
+            <p>Nos interesa saber:</p>
+            <ul>
+                <li>¿Qué has vivido?</li>
+                <li>¿Qué has aprendido?</li>
+                <li>¿Qué has sentido?</li>
+                <li>¿Qué personas han sido importantes para ti?</li>
+                <li>¿Qué cambios has experimentado?</li>
+            </ul>
+            <p>Te invitamos a contar tus experiencias usando la imaginación y puedes mezclar cosas reales con cosas inventadas.</p>
+            <p>Una idea importante: Puedes imaginar que eres un ser diferente.</p>
+            <p>Por ejemplo:</p>
+            <ul>
+                <li>Un animal.</li>
+                <li>Una planta.</li>
+                <li>Un insecto.</li>
+                <li>Un hongo.</li>
+                <li>Una criatura inventada o imaginada.</li>
+            </ul>
+            <p>Desde ese personaje puedes contar tu historia.</p>
+            <p>Algunas preguntas que pueden ayudarte:</p>
+            <ul>
+                <li>¿Qué significa Crea para ti?</li>
+                <li>¿Qué recuerdas de tu experiencia en Crea?</li>
+                <li>¿Qué has aprendido?</li>
+                <li>¿Qué personas te acompañan?</li>
+                <li>Si fueras un animal o una criatura, ¿cuál serías?</li>
+                <li>¿Cómo sería tu vida en el mundo de Crea?</li>
+                <li>¿Qué historia te gustaría contar?</li>
+            </ul>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+4" alt="Ilustración universos imaginados" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-presentar">
+        <div class="easy-text">
+            <h2>5. ¿Qué puedes presentar?</h2>
+            <p>Puedes participar con:</p>
+            <ul>
+                <li>Textos</li>
+                <li>Dibujos</li>
+                <li>Pinturas</li>
+                <li>Fotografías</li>
+                <li>Cómics</li>
+                <li>Audios</li>
+                <li>Videos</li>
+                <li>Creaciones que mezclen varios formatos</li>
+            </ul>
+            <p>Puedes trabajar de manera individual o colectiva.</p>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+5" alt="Ilustración formatos artísticos" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-enviar">
+        <div class="easy-text">
+            <h2>6. ¿Cómo puedes enviar tu propuesta?</h2>
+            <p><strong>Lista de verificación</strong></p>
+            <p>Antes de entregar mi propuesta, reviso que:</p>
+            <ul>
+                <li>☐ Participo actualmente en un proceso de formación Crea.</li>
+                <li>☐ Mi propuesta se relaciona con la temática de la convocatoria.</li>
+                <li>☐ Mi propuesta es de mi autoría.</li>
+                <li>☐ Revisé los requisitos técnicos del formato que elegí.</li>
+                <li>☐ Incluí el título de mi propuesta.</li>
+                <li>☐ Entregué mi propuesta a mi artista formador(a).</li>
+                <li>☐ Completé los formatos de autorización que correspondan.</li>
+                <li>☐ Entregué la propuesta antes de la fecha límite.</li>
+            </ul>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+6" alt="Ilustración lista de envío" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-fechas">
+        <div class="easy-text">
+            <h2>7. Fechas importantes</h2>
+            <p><strong>Inicio de la convocatoria:</strong> 1 de junio de 2026.</p>
+            <p><strong>Cierre de la convocatoria:</strong> 31 de julio de 2026.</p>
+            <p><strong>Publicación de resultados:</strong> 14 de agosto de 2026.</p>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+7" alt="Ilustración fechas clave" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-ayuda">
+        <div class="easy-text">
+            <h2>8. ¿Necesitas ayuda?</h2>
+            <p>Puedes pedir apoyo a:</p>
+            <ul>
+                <li>Tu artista formador o artista formadora.</li>
+                <li>El equipo de Membrana.</li>
+            </ul>
+            <p>Recuerda que no existe una manera correcta de participar.</p>
+            <p>Lo más importante es compartir tu experiencia y tu forma de crear.</p>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Seccion+8" alt="Ilustración ayuda y acompañamiento" />
+        </div>
+    </div>
+
+    <div class="easy-section" id="lf-glosario">
+        <div class="easy-text">
+            <h2>Glosario</h2>
+            <ul>
+                <li><strong>Experiencia Crea:</strong> es todo lo que has vivido, sentido, aprendido, imaginado o transformado gracias a tu participación en Crea.</li>
+                <li><strong>Fabulación especulativa:</strong> es una manera de contar historias mezclando lo que has vivido con la imaginación. No se trata solamente de recordar lo que pasó, sino de inventar nuevas formas de narrarlo, imaginando otros mundos, seres o posibilidades.</li>
+                <li><strong>Bichos humanos y no humanos:</strong> es una manera imaginativa de pensar que compartimos el mundo con otros seres: animales, plantas, hongos, microorganismos o, también, seres imaginados. Todos podemos relacionarnos y aprender unos de otros.</li>
+                <li><strong>Habitar el presente:</strong> es cuando prestamos atención a lo que vivimos aquí y ahora: las personas con quienes compartimos, los lugares que habitamos, las emociones que sentimos y las relaciones que construimos.</li>
+                <li><strong>Relaciones interespecie:</strong> son los vínculos que existen entre seres de diferentes especies, por ejemplo entre personas y animales, personas y plantas, o entre cualquier forma de vida.</li>
+                <li><strong>Rareza:</strong> aquello que nos hace diferentes, únicos o poco comunes. En esta convocatoria, la rareza se entiende como una fuente de creatividad e imaginación.</li>
+            </ul>
+        </div>
+        <div class="easy-media">
+            <img src="https://via.placeholder.com/300x200?text=Imagen+Glosario" alt="Ilustración de conceptos" />
+        </div>
+    </div>
+
+    <hr>
+    <p><strong>🌟 Versión lectura fácil 🌟</strong></p>
+    <footer>
+        <div class="contenedor-creditos">
+            <p><em>Guía desarrollada con amor por el Equipo de Investigación y Gestión del conocimiento (EPIG)</em></p>
+        </div>
+    </footer>
+`;
+            dynamicContainer.innerHTML = easyVersion;
+        }
+
+        function toggleBigText() {
+            if (isBigText) {
+                bodyEl.classList.remove('big-text');
+                isBigText = false;
+            } else {
+                bodyEl.classList.add('big-text');
+                isBigText = true;
+            }
+        }
+
+        function resetGuide() {
+            currentContrast = '';
+            document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
+            document.body.className = "bg-image";
+            speechSynthesis.cancel();
+            if (easyReadActive) {
+                restoreOriginalText();
+            }
+            isBigText = false;
+        }
+    </script>
+</body>
+</html>
