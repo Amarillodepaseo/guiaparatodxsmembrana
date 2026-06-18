@@ -758,15 +758,26 @@
         }
 
         function playTTS() {
-            if (speechSynthesis.paused) {
-                speechSynthesis.resume();
-            } else {
-                speechSynthesis.cancel();
-                utterance = new SpeechSynthesisUtterance(document.getElementById('pageContent').innerText);
-                utterance.lang = 'es';
-                speechSynthesis.speak(utterance);
-            }
-        }
+    // 1. Si el navegador dice que está explícitamente pausado, lo reanudamos
+    if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+    } else {
+        // 2. ¡IMPORTANTE! Cancelamos cualquier lectura fantasma que haya quedado congelada en el servidor
+        speechSynthesis.cancel();
+        
+        // Un mini retraso de 50 milisegundos para darle tiempo al navegador de limpiar su memoria
+        setTimeout(() => {
+            const textToRead = document.getElementById('pageContent').innerText;
+            utterance = new SpeechSynthesisUtterance(textToRead);
+            
+            // Usamos 'es' para compatibilidad total con cualquier dispositivo (PC o móvil)
+            utterance.lang = 'es'; 
+            
+            // 3. Ejecutamos la reproducción limpia
+            speechSynthesis.speak(utterance);
+        }, 50);
+    }
+}
 
         function pauseTTS() {
             if (speechSynthesis.speaking && !speechSynthesis.paused) {
