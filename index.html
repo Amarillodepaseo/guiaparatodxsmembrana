@@ -763,7 +763,7 @@
             } else {
                 speechSynthesis.cancel();
                 utterance = new SpeechSynthesisUtterance(document.getElementById('pageContent').innerText);
-                utterance.lang = 'es-ES';
+                utterance.lang = 'es';
                 speechSynthesis.speak(utterance);
             }
         }
