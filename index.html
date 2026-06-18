@@ -757,28 +757,52 @@
             }
         }
 
-        function playTTS() {
-    // 1. Si el navegador dice que está explícitamente pausado, lo reanudamos
+// --- SISTEMA DE AUDIO ULTRA-COMPATIBLE ---
+let utterance = null;
+
+function playTTS() {
+    // Si ya se estaba reproduciendo y estaba en pausa, solo reanudamos
     if (speechSynthesis.paused) {
         speechSynthesis.resume();
-    } else {
-        // 2. ¡IMPORTANTE! Cancelamos cualquier lectura fantasma que haya quedado congelada en el servidor
-        speechSynthesis.cancel();
+        return;
+    }
+
+    // 1. Limpieza total de cualquier audio fantasma previo
+    speechSynthesis.cancel();
+
+    // 2. TRUCO DE DESBLOQUEO: Enviamos un texto vacío de 1 milisegundo 
+    // Esto obliga al navegador en internet a despertar el motor de voz
+    speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+
+    // 3. Mini retraso para que el navegador asimile el desbloqueo y cargue el texto real
+    setTimeout(() => {
+        const textToRead = document.getElementById('pageContent').innerText;
         
-        // Un mini retraso de 50 milisegundos para darle tiempo al navegador de limpiar su memoria
-        setTimeout(() => {
-            const textToRead = document.getElementById('pageContent').innerText;
-            utterance = new SpeechSynthesisUtterance(textToRead);
-            
-            // Usamos 'es' para compatibilidad total con cualquier dispositivo (PC o móvil)
-            utterance.lang = 'es'; 
-            
-            // 3. Ejecutamos la reproducción limpia
-            speechSynthesis.speak(utterance);
-        }, 50);
+        // Si el texto está vacío por algún motivo, evitamos el error
+        if (!textToRead.trim()) return;
+
+        utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'es'; 
+
+        // Bugfix de Chrome: Si el texto es muy largo, a veces se pausa solo a los 15 segundos.
+        // Esto lo mantiene "vivo" simulando un pulso.
+        utterance.onend = function() { speechSynthesis.cancel(); };
+        utterance.onerror = function() { speechSynthesis.cancel(); };
+
+        // 4. Hablar
+        speechSynthesis.speak(utterance);
+    }, 100);
+}
+
+function pauseTTS() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
     }
 }
 
+function stopTTS() {
+    speechSynthesis.cancel();
+}
         function pauseTTS() {
             if (speechSynthesis.speaking && !speechSynthesis.paused) {
                 speechSynthesis.pause();
