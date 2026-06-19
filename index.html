@@ -1041,15 +1041,26 @@
         }
 
         function resetGuide() {
-            currentContrast = '';
-            document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
-            document.body.className = "bg-image";
-            speechSynthesis.cancel();
-            if (easyReadActive) {
-                restoreOriginalText();
-            }
-            isBigText = false;
-        }
+    currentContrast = '';
+    document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
+    document.body.className = "bg-image";
+    
+    // 1. Apagamos el audio de forma segura SOLO si el navegador está hablando o pausado
+    if (speechSynthesis.speaking || speechSynthesis.paused) {
+        speechSynthesis.cancel();
+    }
+    
+    if (easyReadActive) {
+        restoreOriginalText();
+    }
+    isBigText = false;
+
+    // 2. TRUCO MAESTRO: Forzamos un reinicio limpio después de un mini retraso (50ms)
+    // Esto asegura que el motor de voz "despierte" y quede listo para el próximo ▶ Reproducir
+    setTimeout(() => {
+        speechSynthesis.cancel();
+    }, 50);
+}
     </script>
 </body>
 </html>
