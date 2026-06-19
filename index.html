@@ -244,6 +244,13 @@
             padding: 10px;
         }
 
+        .index-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin: 30px 0 40px 0;
+            flex-wrap: wrap;
+        }
         .index-image {
             flex: 0 0 400px;
             max-width: 400px;
@@ -257,6 +264,10 @@
             border-radius: 12px;
             display: block;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .index {
+            flex: 1;
+            min-width: 200px;
         }
 
         /* --- ESTILOS DE SECCIONES CON IMÁGENES A LA DERECHA EN LECTURA FÁCIL --- */
@@ -310,12 +321,13 @@
         <p><strong>Texto a audio (TTS)</strong></p>
         <button class="btn-tts-play" onclick="playTTS()">▶ Reproducir</button>
         <button class="btn-tts-pause" onclick="pauseTTS()">|| Pausar</button>
-        <button class="btn-tts-stop" onclick="stopTTS()">⏹ Detener</button>
+        <!--<button class="btn-tts-stop" onclick="stopTTS()">⏹ Detener</button>-->
 
         
 
         <p><strong>Reestablecer guía</strong></p>
         <button class="btn-reset" onclick="resetGuide()">↻ Reestablecer</button>
+        <p style="font-size: 15px;"><em>Si desea reiniciar el audio, reestablezca la guía y presione el botón de reproducir.</em></p>
     </div>
 
     <!-- Contenido principal -->
@@ -353,10 +365,7 @@
                     <img src="Poster M12.png" alt="Ilustración del índice" />
                 </div>
                 <div class="index">
-                    <p><em>Ilustración de una figura humanoide de color violeta ubicada en el centro de la imagen. 
-                    De su cabeza surgen múltiples rostros humanos de diferentes edades, géneros y apariencias, 
-                    conectados entre sí mediante formas similares a raíces o ramas. El fondo presenta formas 
-                    onduladas en tonos rosados, verdes y blancos que generan una sensación de movimiento y transformación.</em></p>
+                    
                     <h3>Índice</h3>
                     <a href="#presentacion">Presentación</a>
                     <a href="#quemembrana">¿Qué es Membrana?</a>
@@ -369,8 +378,13 @@
                     <a href="#Paso a paso">Paso a paso</a>
                     <a href="#referentes">Referentes</a>
                     <a href="#glosario">Glosario</a>
+                
                 </div>
             </div>
+<p><em>Ilustración de una figura humanoide de color violeta ubicada en el centro de la imagen. 
+                    De su cabeza surgen múltiples rostros humanos de diferentes edades, géneros y apariencias, 
+                    conectados entre sí mediante formas similares a raíces o ramas. El fondo presenta formas 
+                    onduladas en tonos rosados, verdes y blancos que generan una sensación de movimiento y transformación.</em></p>
 
             <div class="content-card" id="content">
                 <div id="mainTextDiv">
@@ -716,11 +730,13 @@
     </div>
 
     <script>
+        // --- INICIO DE LAS FUNCIONES CORREGIDAS ---
+        
         let utterance;
         let easyReadActive = false;
         let isBigText = false;
         let originalHTML = '';
-        let currentContrast = ''; // Rastrea si hay un modo de contraste activo ('bw' o 'by')
+        let currentContrast = '';
         const bodyEl = document.body;
         const dynamicContainer = document.getElementById('dynamicContentContainer');
 
@@ -742,14 +758,12 @@
 
         function setContrast(c) {
             document.body.classList.remove('bw', 'by');
-            currentContrast = c; // Guardamos el contraste elegido
+            currentContrast = c;
             
             if (c) {
                 document.body.classList.add(c);
-                // Si hay contraste activo, quitamos la clase de fondo de lectura fácil para que no interfiera
                 document.body.classList.remove('bg-solid-easy', 'bg-image');
             } else {
-                // Si se quita el contraste, devolvemos el fondo que corresponda
                 if (easyReadActive) {
                     document.body.classList.add('bg-solid-easy');
                 } else {
@@ -758,51 +772,95 @@
             }
         }
 
+        // --- FUNCIÓN PLAY MEJORADA (REPRODUCIR / REANUDAR) ---
         function playTTS() {
-    // Si el navegador dice que está pausado, intentamos reanudarlo
-    if (speechSynthesis.paused) {
-        speechSynthesis.resume();
-        
-        // TRUCO DE SEGURIDAD: Si tras darle resume() sigue atascado en silencio por culpa de un Stop previo, 
-        // forzamos una reproducción limpia desde cero.
-        setTimeout(() => {
+            // 1. Si está pausado, solo lo reanudamos.
             if (speechSynthesis.paused) {
-                speechSynthesis.cancel();
-                iniciarLecturaLimpia();
+                speechSynthesis.resume();
+                return;
             }
-        }, 60);
-    } else {
-        iniciarLecturaLimpia();
-    }
-}
 
-// Función auxiliar para iniciar el audio de forma correcta
-function iniciarLecturaLimpia() {
-    speechSynthesis.cancel();
-    setTimeout(() => {
-        const textToRead = document.getElementById('pageContent').innerText;
-        utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.lang = 'es';
-        speechSynthesis.speak(utterance);
-    }, 50);
-}
+            // 2. Si ya está hablando y no está pausado, no hacemos nada.
+            if (speechSynthesis.speaking) {
+                return;
+            }
 
-function pauseTTS() {
-    if (speechSynthesis.speaking && !speechSynthesis.paused) {
-        speechSynthesis.pause();
-    }
-}
+            // 3. Si no está hablando ni pausado, comenzamos una nueva lectura.
+            iniciarLecturaLimpia();
+        }
 
-function stopTTS() {
-    // ¡EL ARREGLO AQUÍ!: Si el audio estaba pausado, primero lo reanudamos 
-    // por un milisegundo para quitarle el bloqueo mental al navegador.
-    if (speechSynthesis.paused) {
-        speechSynthesis.resume();
-    }
-    
-    // Ahora sí, cancelamos de forma segura y total
-    speechSynthesis.cancel();
-}
+        // --- FUNCIÓN AUXILIAR PARA INICIAR LA LECTURA LIMPIA ---
+        function iniciarLecturaLimpia() {
+            // Cancelamos cualquier audio pendiente para evitar colisiones.
+            speechSynthesis.cancel();
+
+            // Pequeño retraso para asegurar que la cancelación se procese.
+            setTimeout(() => {
+                // Obtenemos el texto de la página.
+                const textToRead = document.getElementById('pageContent').innerText;
+                
+                // Creamos el nuevo utterance.
+                utterance = new SpeechSynthesisUtterance(textToRead);
+                utterance.lang = 'es';
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                // Evento para saber cuándo termina (por si queremos hacer algo).
+                utterance.onend = function() {
+                    // El audio terminó naturalmente.
+                };
+
+                // Iniciamos la reproducción.
+                speechSynthesis.speak(utterance);
+            }, 50);
+        }
+
+        // --- FUNCIÓN PAUSA MEJORADA ---
+        function pauseTTS() {
+            // Solo pausamos si está hablando.
+            if (speechSynthesis.speaking) {
+                speechSynthesis.pause();
+            }
+        }
+
+        // --- FUNCIÓN DETENER MEJORADA (EL MÁS CRÍTICO) ---
+        function stopTTS() {
+            // 1. Cancelamos el audio inmediatamente.
+            speechSynthesis.cancel();
+
+            // 2. Limpiamos la referencia global para evitar que quede un "fantasma".
+            utterance = null;
+
+            // 3. Forzamos una cancelación extra después de un microsegundo,
+            //    para asegurar que Chrome suelte completamente el hilo de audio.
+            setTimeout(() => {
+                speechSynthesis.cancel();
+            }, 10);
+        }
+
+        // --- RESET GUILLE MEJORADO (TAMBIÉN PARA EL AUDIO) ---
+        function resetGuide() {
+            // 1. Detener el audio de forma contundente.
+            stopTTS();
+
+            // 2. Restablecer los modos visuales.
+            currentContrast = '';
+            document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
+            document.body.className = "bg-image";
+            
+            if (easyReadActive) {
+                restoreOriginalText();
+            }
+            isBigText = false;
+            easyReadActive = false;
+
+            // 3. Recargar la página para un reinicio total y limpio.
+            //    Esto es lo más fiable para dejar el TTS en cero.
+            window.location.reload();
+        }
+
+        // --- FUNCIONES DE LECTURA FÁCIL (SIN CAMBIOS, PERO LAS DEJO PARA CONTEXTO) ---
         function toggleEasy() {
             if (easyReadActive) {
                 restoreOriginalText();
@@ -821,8 +879,6 @@ function stopTTS() {
             if (originalHTML) {
                 dynamicContainer.innerHTML = originalHTML;
                 easyReadActive = false;
-                
-                // Si no hay un modo de contraste activo, devolvemos la imagen de fondo original
                 document.body.classList.remove('bg-solid-easy');
                 if (!currentContrast) {
                     document.body.className = "bg-image";
@@ -834,7 +890,6 @@ function stopTTS() {
             storeOriginalHTML();
             easyReadActive = true;
 
-            // Si NO hay un contraste activo, aplicamos el fondo sólido #c9f5d6
             if (!currentContrast) {
                 document.body.className = "bg-solid-easy";
             } else {
@@ -1052,32 +1107,6 @@ function stopTTS() {
             }
         }
 
-    function resetGuide() {
-    // 1. PRIMERO: Cancelamos el audio de inmediato y por completo antes de alterar el HTML
-    speechSynthesis.cancel();
-    
-    // 2. Limpiamos la variable global del audio si existe
-    if (typeof utterance !== 'undefined') {
-        utterance = null;
-    }
-
-    // 3. SEGUNDO: Hacemos los cambios visuales y de texto una vez que el audio está muerto
-    currentContrast = '';
-    document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
-    document.body.className = "bg-image";
-    
-    if (easyReadActive) {
-        restoreOriginalText();
-    }
-    isBigText = false;
-
-    // 4. TERCERO: Le damos un respiro de 100ms al navegador para que asimile los cambios en internet
-    // y enviamos un comando de cancelación final para dejar el motor de voz en "espera limpia".
-    setTimeout(() => {
-        speechSynthesis.cancel();
-    }, 100);
-    window.location.reload();
-}
     </script>
 </body>
 </html>
