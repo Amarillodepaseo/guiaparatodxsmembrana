@@ -757,7 +757,7 @@
             }
         }
 
-function playTTS() {
+        function playTTS() {
     // 1. Si el navegador dice que está explícitamente pausado, lo reanudamos
     if (speechSynthesis.paused) {
         speechSynthesis.resume();
@@ -778,6 +778,17 @@ function playTTS() {
         }, 50);
     }
 }
+
+        function pauseTTS() {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                speechSynthesis.pause();
+            }
+        }
+
+        function stopTTS() {
+            speechSynthesis.cancel();
+        }
+
         function toggleEasy() {
             if (easyReadActive) {
                 restoreOriginalText();
