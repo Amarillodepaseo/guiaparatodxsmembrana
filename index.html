@@ -1040,26 +1040,30 @@
             }
         }
 
-        function resetGuide() {
+    function resetGuide() {
+    // 1. PRIMERO: Cancelamos el audio de inmediato y por completo antes de alterar el HTML
+    speechSynthesis.cancel();
+    
+    // 2. Limpiamos la variable global del audio si existe
+    if (typeof utterance !== 'undefined') {
+        utterance = null;
+    }
+
+    // 3. SEGUNDO: Hacemos los cambios visuales y de texto una vez que el audio está muerto
     currentContrast = '';
     document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
     document.body.className = "bg-image";
-    
-    // 1. Apagamos el audio de forma segura SOLO si el navegador está hablando o pausado
-    if (speechSynthesis.speaking || speechSynthesis.paused) {
-        speechSynthesis.cancel();
-    }
     
     if (easyReadActive) {
         restoreOriginalText();
     }
     isBigText = false;
 
-    // 2. TRUCO MAESTRO: Forzamos un reinicio limpio después de un mini retraso (50ms)
-    // Esto asegura que el motor de voz "despierte" y quede listo para el próximo ▶ Reproducir
+    // 4. TERCERO: Le damos un respiro de 100ms al navegador para que asimile los cambios en internet
+    // y enviamos un comando de cancelación final para dejar el motor de voz en "espera limpia".
     setTimeout(() => {
         speechSynthesis.cancel();
-    }, 50);
+    }, 100);
 }
     </script>
 </body>
