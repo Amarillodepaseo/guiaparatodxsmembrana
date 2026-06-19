@@ -824,7 +824,20 @@
             }
         }
 
+        // --- FUNCIÓN DETENER MEJORADA (EL MÁS CRÍTICO) ---
+        function stopTTS() {
+            // 1. Cancelamos el audio inmediatamente.
+            speechSynthesis.cancel();
 
+            // 2. Limpiamos la referencia global para evitar que quede un "fantasma".
+            utterance = null;
+
+            // 3. Forzamos una cancelación extra después de un microsegundo,
+            //    para asegurar que Chrome suelte completamente el hilo de audio.
+            setTimeout(() => {
+                speechSynthesis.cancel();
+            }, 10);
+        }
 
         // --- RESET GUILLE MEJORADO (TAMBIÉN PARA EL AUDIO) ---
         function resetGuide() {
