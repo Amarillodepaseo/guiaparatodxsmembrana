@@ -730,9 +730,93 @@
     </div>
 
     <script>
-        // --- INICIO DE LAS FUNCIONES CORREGIDAS ---
+        // ============================================
+        // NUEVO REPRODUCTOR DE AUDIO LOCAL (TTS)
+        // ============================================
+        // Variables globales para el audio
+        let audioPlayer = null;
+        let currentAudioSrc = '';
+
+        // Función para obtener el audio correspondiente según la versión activa
+        function getAudioSrc() {
+            // Detectamos si la versión de Lectura Fácil está activa
+            // Asumimos que existe una variable global 'easyReadActive' o podemos detectarlo por el contenido
+            // Usamos la variable global 'easyReadActive' que ya existe en el código
+            if (typeof easyReadActive !== 'undefined' && easyReadActive) {
+                return 'AUDIOS/audio_v_lectura_facil.mp3';
+            } else {
+                return 'AUDIOS/audio_v_regular.mp3';
+            }
+        }
+
+        // Función para detener y limpiar el audio actual
+        function stopAndClearAudio() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                audioPlayer = null;
+                currentAudioSrc = '';
+            }
+        }
+
+        // Función principal de reproducción
+        function playTTS() {
+            const src = getAudioSrc();
+            
+            // Si el audio actual es el mismo y ya está reproduciéndose, no hacemos nada
+            if (audioPlayer && currentAudioSrc === src && !audioPlayer.paused) {
+                return;
+            }
+            
+            // Si el audio actual es el mismo y está pausado, lo reanudamos
+            if (audioPlayer && currentAudioSrc === src && audioPlayer.paused) {
+                audioPlayer.play().catch(e => console.warn('Error al reanudar:', e));
+                return;
+            }
+            
+            // Si cambió la versión o no hay audio, creamos uno nuevo
+            stopAndClearAudio();
+            
+            // Creamos el nuevo audio
+            audioPlayer = new Audio(src);
+            currentAudioSrc = src;
+            
+            // Manejo de errores
+            audioPlayer.onerror = function(e) {
+                console.error('Error al cargar el audio:', e);
+                alert('No se pudo cargar el archivo de audio. Verifica que la carpeta "AUDIOS" exista y contenga los archivos correctos.');
+                stopAndClearAudio();
+            };
+            
+            // Reproducimos
+            audioPlayer.play().catch(e => {
+                console.warn('Error al reproducir:', e);
+                // Intentamos de nuevo después de un breve retraso (por si el audio no está listo)
+                setTimeout(() => {
+                    if (audioPlayer) {
+                        audioPlayer.play().catch(err => console.warn('Segundo intento fallido:', err));
+                    }
+                }, 100);
+            });
+        }
+
+        // Función de pausa
+        function pauseTTS() {
+            if (audioPlayer && !audioPlayer.paused) {
+                audioPlayer.pause();
+            }
+        }
+
+        // Función para detener completamente el audio (se usa al cambiar de versión)
+        function stopTTS() {
+            stopAndClearAudio();
+        }
+
+        // ============================================
+        // FUNCIONES EXISTENTES (MODIFICADAS PARA INTEGRAR EL NUEVO TTS)
+        // ============================================
         
-        let utterance;
+        let utterance; // Ya no se usa, pero lo dejamos por compatibilidad
         let easyReadActive = false;
         let isBigText = false;
         let originalHTML = '';
@@ -772,96 +856,11 @@
             }
         }
 
-        // --- FUNCIÓN PLAY MEJORADA (REPRODUCIR / REANUDAR) ---
-        function playTTS() {
-            // 1. Si está pausado, solo lo reanudamos.
-            if (speechSynthesis.paused) {
-                speechSynthesis.resume();
-                return;
-            }
-
-            // 2. Si ya está hablando y no está pausado, no hacemos nada.
-            if (speechSynthesis.speaking) {
-                return;
-            }
-
-            // 3. Si no está hablando ni pausado, comenzamos una nueva lectura.
-            iniciarLecturaLimpia();
-        }
-
-        // --- FUNCIÓN AUXILIAR PARA INICIAR LA LECTURA LIMPIA ---
-        function iniciarLecturaLimpia() {
-            // Cancelamos cualquier audio pendiente para evitar colisiones.
-            speechSynthesis.cancel();
-
-            // Pequeño retraso para asegurar que la cancelación se procese.
-            setTimeout(() => {
-                // Obtenemos el texto de la página.
-                const textToRead = document.getElementById('pageContent').innerText;
-                
-                // Creamos el nuevo utterance.
-                utterance = new SpeechSynthesisUtterance(textToRead);
-                utterance.lang = 'es';
-                utterance.rate = 1;
-                utterance.pitch = 1;
-                utterance.volume = 1;
-
-                // Evento para saber cuándo termina (por si queremos hacer algo).
-                utterance.onend = function() {
-                    // El audio terminó naturalmente.
-                };
-
-                // Iniciamos la reproducción.
-                speechSynthesis.speak(utterance);
-            }, 50);
-        }
-
-        // --- FUNCIÓN PAUSA MEJORADA ---
-        function pauseTTS() {
-            // Solo pausamos si está hablando.
-            if (speechSynthesis.speaking) {
-                speechSynthesis.pause();
-            }
-        }
-
-        // --- FUNCIÓN DETENER MEJORADA (EL MÁS CRÍTICO) ---
-        function stopTTS() {
-            // 1. Cancelamos el audio inmediatamente.
-            speechSynthesis.cancel();
-
-            // 2. Limpiamos la referencia global para evitar que quede un "fantasma".
-            utterance = null;
-
-            // 3. Forzamos una cancelación extra después de un microsegundo,
-            //    para asegurar que Chrome suelte completamente el hilo de audio.
-            setTimeout(() => {
-                speechSynthesis.cancel();
-            }, 10);
-        }
-
-        // --- RESET GUILLE MEJORADO (TAMBIÉN PARA EL AUDIO) ---
-        function resetGuide() {
-            // 1. Detener el audio de forma contundente.
-            stopTTS();
-
-            // 2. Restablecer los modos visuales.
-            currentContrast = '';
-            document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
-            document.body.className = "bg-image";
-            
-            if (easyReadActive) {
-                restoreOriginalText();
-            }
-            isBigText = false;
-            easyReadActive = false;
-
-            // 3. Recargar la página para un reinicio total y limpio.
-            //    Esto es lo más fiable para dejar el TTS en cero.
-            window.location.reload();
-        }
-
-        // --- FUNCIONES DE LECTURA FÁCIL (SIN CAMBIOS, PERO LAS DEJO PARA CONTEXTO) ---
+        // --- FUNCIONES DE LECTURA FÁCIL (MODIFICADAS PARA DETENER EL AUDIO AL CAMBIAR) ---
         function toggleEasy() {
+            // Detenemos el audio al cambiar de versión
+            stopTTS();
+            
             if (easyReadActive) {
                 restoreOriginalText();
             } else {
@@ -1107,6 +1106,34 @@
             }
         }
 
+        // --- FUNCIÓN RESET MODIFICADA PARA DETENER EL AUDIO ---
+        function resetGuide() {
+            // 1. Detener el audio
+            stopTTS();
+
+            // 2. Restablecer los modos visuales.
+            currentContrast = '';
+            document.body.classList.remove('font-large', 'font-xl', 'bw', 'by', 'big-text', 'bg-solid-easy');
+            document.body.className = "bg-image";
+            
+            if (easyReadActive) {
+                restoreOriginalText();
+            }
+            isBigText = false;
+            easyReadActive = false;
+
+            // 3. No recargamos la página para no perder el estado del audio
+            // Pero aseguramos que el audio esté completamente detenido
+            stopTTS();
+        }
+
+        // --- LIMPIEZA ADICIONAL: si el usuario cambia de versión, detenemos el audio ---
+        // Ya lo hacemos en toggleEasy()
+        
+        // --- Inicialización: aseguramos que no haya audio al cargar ---
+        window.addEventListener('load', function() {
+            stopTTS();
+        });
     </script>
 </body>
 </html>
